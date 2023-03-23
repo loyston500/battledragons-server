@@ -2,33 +2,76 @@ from ursina import *
 
 
 from game.sprites import *
+import game.assets
+from game.rng import rng
 
 import typing as t
 from PIL import Image
 from random import Random
+import json
 
 app = Ursina()
 
-rng = Random()
-rng.seed(69)
-
-
 players: t.List[Player] = []
 
-left_wall = Wall(color=color.green, collider="box", scale=(0.6, 10), position=(7, 0))
-right_wall = duplicate(left_wall, x=-7)
+
+background = Background(texture=game.assets.background, scale=2, position=(0, 2.5, 1))
+
+right_walls = [
+    RightWall(
+        texture=game.assets.wall1,
+        collider="box",
+        scale=3,
+        position=(7, 6 - 2.8 * n),
+        rotation=(0, 0, 90),
+    )
+    for n in range(0, 6)
+]
+
+left_walls = [
+    LeftWall(
+        texture=game.assets.wall1,
+        collider="box",
+        scale=3,
+        position=(-7, 6 - 2.8 * n),
+        rotation=(0, 0, 270),
+    )
+    for n in range(0, 6)
+]
+
+top_walls = [
+    TopWall(
+        texture=game.assets.wall1,
+        collider="box",
+        scale=3,
+        position=(6 - 2.8 * n, 4),
+        rotation=(0, 0, 0),
+    )
+    for n in range(0, 6)
+]
+
+bottom_walls = [
+    BottomWall(
+        texture=game.assets.wall1,
+        collider="box",
+        scale=3,
+        position=(6 - 2.8 * n, -4),
+    )
+    for n in range(0, 6)
+]
 
 
 def add_player(
     pos=(50, 50),
-    image=Image.new(size=(32, 32), color=(255, 200, 50, 255), mode="RGBA"),
+    name=None,
+    texture=None,
     init_points=30,
 ):
     player = Player(
-        scale_y=1,
-        texture=Texture(image),
-        xv=rng.random(),
-        yv=rng.random(),
+        name=texture,
+        scale=1,
+        xv=rng.random() * 2 - 1,
+        yv=rng.random() * 2 - 1,
         collider="box",
     )
     players.append(player)
@@ -37,10 +80,7 @@ def add_player(
 def input(key):
     # test
     if key == "r":
-        add_player()
-
-
-add_player()
+        add_player(texture=rng.choice(game.assets.dragons))
 
 
 async def server_handler(websocket, path):
