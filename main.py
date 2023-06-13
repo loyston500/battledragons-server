@@ -1,15 +1,14 @@
 from ursina import *
 
 import config
-import server
-import game.battlebounce
-from game.battlebounce import *
+import game.battledragons
+import game.server
+from game.battledragons import *
 
-server.run(game.battlebounce.server_handler)
-game.battlebounce.app.run()
+game.server.run("", config.port)
 
-
-def input(key):
-    # test
-    if key == "r":
-        add_player()
+if not config.only_run_server:
+    game.battledragons.app.run()
+else:
+    while True:
+        pass

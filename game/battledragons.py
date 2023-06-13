@@ -12,8 +12,13 @@ import json
 
 app = Ursina()
 
-players: t.List[Player] = []
+players: list[Dragon] = []
 
+users = {}
+
+food = []
+
+enemies = []
 
 background = Background(texture=game.assets.background, scale=2, position=(0, 2.5, 1))
 
@@ -36,7 +41,7 @@ left_walls = [
         position=(-7, 6 - 2.8 * n),
         rotation=(0, 0, 270),
     )
-    for n in range(0, 6)
+    for n in range(0, 7)
 ]
 
 top_walls = [
@@ -65,14 +70,16 @@ def add_player(
     pos=(50, 50),
     name=None,
     texture=None,
-    init_points=30,
+    hp=30,
+    bot=False,
 ):
-    player = Player(
+    player = (Bot if bot else User)(
         name=texture,
         scale=1,
         xv=rng.random() * 2 - 1,
         yv=rng.random() * 2 - 1,
         collider="box",
+        hp=hp,
     )
     players.append(player)
 
@@ -80,11 +87,23 @@ def add_player(
 def input(key):
     # test
     if key == "r":
-        add_player(texture=rng.choice(game.assets.dragons))
+        add_player(
+            texture=rng.choice(game.assets.dragons), bot=True, hp=rng.randint(3, 7)
+        )
+    if key == "f":
+        food.append(
+            Food(
+                texture=rng.choice(game.assets.food),
+                position=(rng.randint(-5, 5), rng.randint(-3, 3), 0),
+                hp=2,
+            )
+        )
 
-
-async def server_handler(websocket, path):
-    async for data in websocket:
-        print(f"Received: '{data}'")
-        await websocket.send(data)
-        add_player()
+    if key == "e":
+        enemies.append(
+            Enemy(
+                texture=rng.choice(game.assets.enemies),
+                position=(rng.randint(-5, 5), rng.randint(-3, 3), 0),
+                hp=-3,
+            )
+        )

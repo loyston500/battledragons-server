@@ -1,4 +1,4 @@
 from random import Random
 
 rng = Random()
-rng.seed(69)
+rng.seed(None)

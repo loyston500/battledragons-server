@@ -1,6 +1,7 @@
 from ursina import *
 
-window.fullscreen = True
+window.fullscreen = False
 window.title = "Battle Dragons"
 
-port = 6754
+port = 6060
+only_run_server = False
